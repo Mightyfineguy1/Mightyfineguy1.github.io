@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D RPG Game with Pixel Art</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #4CAF50;  /* Green background */
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .game-container {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Grass background effect */
+        .grass {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .grass-line {
+            position: absolute;
+            background-color: #2e7d32;  /* Dark green grass */
+            width: 2px;
+            height: 30px;
+            opacity: 0.7;
+        }
+
+        /* Pixelated Character */
+        .character {
+            position: absolute;
+            width: 40px;
+            height: 100px;
+            background-color: transparent;
+            display: grid;
+            grid-template-columns: repeat(4, 10px);  /* Narrow character */
+            grid-template-rows: repeat(10, 10px);
+            transition: transform 0.2s ease;  /* For swing animation */
+        }
+
+        /* Each Pixel Block for the Character */
+        .pixel {
+            width: 10px;
+            height: 10px;
+        }
+
+        .head { background-color: #f1c27d; }  /* Skin color for head */
+        .body { background-color: #4caf50; }  /* Green for body */
+        .pants { background-color: #3e2723; } /* Dark brown for pants */
+        .shoes { background-color: #212121; } /* Black for shoes */
+        .shirt { background-color: #2196f3; }  /* Blue for shirt */
+
+        /* Pixelated Enemy */
+        .enemy {
+            position: absolute;
+            width: 40px;
+            height: 100px;
+            background-color: transparent;
+            display: grid;
+            grid-template-columns: repeat(4, 10px);  /* Narrow enemy */
+            grid-template-rows: repeat(10, 10px);
+            transition: transform 0.1s linear;  /* Smooth enemy movement */
+        }
+
+        /* Each Pixel Block for the Enemy */
+        .enemy-pixel {
+            width: 10px;
+            height: 10px;
+        }
+
+        .enemy-body { background-color: red; }    /* Red for enemy's body */
+        .enemy-head { background-color: #f1c27d; } /* Light skin color for enemy's head */
+        .enemy-armor { background-color: #607d8b; } /* Gray armor color */
+
+        /* Attack Swing Animation */
+        .attack-swing {
+            animation: swing 0.5s forwards;
+        }
+
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(-45deg); /* Swinging motion */
+            }
+            100% {
+                transform: rotate(0deg); /* Back to normal */
+            }
+        }
+
+        .stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .stat-bar {
+            width: 200px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #444;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .stat-bar div {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Level Up Modal */
+        .level-up-modal {
+            display: none;
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .level-up-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .level-up-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <!-- Grass -->
+    <div class="grass" id="grass"></div>
+
+    <div class="stats">
+        <p>Level: <span id="level">1</span></p>
+        <p>Health: <span id="health">100</span>/100</p>
+        <div class="stat-bar">
+            <div id="health-bar" style="width: 100%; background-color: green;"></div>
+        </div>
+        <p>XP: <span id="xp">0</span>/100</p>
+        <div class="stat-bar">
+            <div id="xp-bar" style="width: 0%; background-color: blue;"></div>
+        </div>
+    </div>
+
+    <div class="character" id="character" style="top: 50px; left: 50px;">
+        <!-- Character Pixel Design -->
+        <div class="pixel head"></div><div class="pixel head"></div><div class="pixel head"></div><div class="pixel head"></div><div class="pixel head"></div>
+        <div class="pixel head"></div>
+        <div class="pixel body"></div><div class="pixel body"></div><div class="pixel body"></div><div class="pixel body"></div><div class="pixel body"></div>
+        <div class="pixel pants"></div><div class="pixel pants"></div><div class="pixel pants"></div><div class="pixel pants"></div><div class="pixel pants"></div>
+        <div class="pixel pants"></div><div class="pixel pants"></div><div class="pixel shoes"></div><div class="pixel shoes"></div><div class="pixel shoes"></div>
+        <div class="pixel shoes"></div><div class="pixel shoes"></div><div class="pixel shoes"></div><div class="pixel shoes"></div><div class="pixel shoes"></div>
+    </div>
+
+    <div class="enemy" id="enemy1" style="top: 200px; left: 200px;">
+        <!-- Enemy Pixel Design -->
+        <div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div>
+        <div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div><div class="enemy-pixel enemy-head"></div>
+        <div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div>
+        <div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div><div class="enemy-pixel enemy-body"></div>
+        <div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div>
+        <div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div><div class="enemy-pixel enemy-armor"></div>
+    </div>
+
+    <div class="level-up-modal" id="level-up-modal">
+        <h3>Level Up!</h3>
+        <p>Choose a stat to upgrade:</p>
+        <button class="level-up-button" id="upgrade-speed">Speed</button>
+        <button class="level-up-button" id="upgrade-health">Health</button>
+        <button class="level-up-button" id="upgrade-damage">Damage</button>
+    </div>
+</div>
+
+<script>
+    // Game Variables
+    let level = 1;
+    let health = 100;
+    let maxHealth = 100;
+    let xp = 0;
+    let xpNeededForLevelUp = 100;
+    let attackPower = 10;
+    let speed = 5;
+
+    let character = document.getElementById('character');
+    let healthBar = document.getElementById('health-bar');
+    let xpBar = document.getElementById('xp-bar');
+    let enemies = document.querySelectorAll('.enemy');
+    let grassContainer = document.getElementById('grass');
+    let levelUpModal = document.getElementById('level-up-modal');
+    let levelDisplay = document.getElementById('level');
+    let healthDisplay = document.getElementById('health');
+    let xpDisplay = document.getElementById('xp');
+
+    let charX = 50; // Character X Position
+    let charY = 50; // Character Y Position
+
+    // Update stats
+    const updateStats = () => {
+        levelDisplay.textContent = level;
+        healthDisplay.textContent = health;
+        xpDisplay.textContent = xp;
+        healthBar.style.width = (health / maxHealth) * 100 + '%';
+        xpBar.style.width = (xp / xpNeededForLevelUp) * 100 + '%';
+    };
+
+    // Level Up Logic
+    const levelUp = () => {
+        level++;
+        xp = 0;
+        xpNeededForLevelUp += 50; // Increase XP threshold for next level
+        maxHealth += 10; // Increase max health on level up
+        attackPower += 5; // Increase attack power on level up
+        health = maxHealth; // Restore health
+
+        updateStats();
+        showLevelUpChoices();
+    };
+
+    const showLevelUpChoices = () => {
+        levelUpModal.style.display = 'block';
+    };
+
+    // Handling Level Up Stat Choices
+    document.getElementById('upgrade-speed').addEventListener('click', () => {
+        speed += 2;  // Increase character speed
+        levelUpModal.style.display = 'none';
+    });
+
+    document.getElementById('upgrade-health').addEventListener('click', () => {
+        maxHealth += 20; // Increase health pool
+        health = maxHealth; // Restore health
+        levelUpModal.style.display = 'none';
+    });
+
+    document.getElementById('upgrade-damage').addEventListener('click', () => {
+        attackPower += 5; // Increase attack damage
+        levelUpModal.style.display = 'none';
+    });
+
+    // Movement Keys (WASD)
+    let keys = { w: false, a: false, s: false, d: false };
+
+    // Add event listeners for movement
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'w') keys.w = true;
+        if (e.key === 'a') keys.a = true;
+        if (e.key === 's') keys.s = true;
+        if (e.key === 'd') keys.d = true;
+        if (e.key === ' ') attackEnemies();
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'w') keys.w = false;
+        if (e.key === 'a') keys.a = false;
+        if (e.key === 's') keys.s = false;
+        if (e.key === 'd') keys.d = false;
+    });
+
+    // Update character position based on WASD
+    function updatePosition() {
+        if (keys.w && charY > 0) charY -= speed;
+        if (keys.a && charX > 0) charX -= speed;
+        if (keys.s && charY < window.innerHeight - 50) charY += speed;
+        if (keys.d && charX < window.innerWidth - 50) charX += speed;
+
+        character.style.top = charY + 'px';
+        character.style.left = charX + 'px';
+    }
+
+    // Function to attack enemies
+    function attackEnemies() {
+        // Add the swing animation to the character
+        character.classList.add('attack-swing');
+        setTimeout(() => {
+            character.classList.remove('attack-swing');
+        }, 500); // Duration of the attack animation (500ms)
+
+        enemies.forEach(enemy => {
+            let enemyX = enemy.offsetLeft;
+            let enemyY = enemy.offsetTop;
+            let distance = Math.sqrt(Math.pow(enemyX - charX, 2) + Math.pow(enemyY - charY, 2));
+
+            // Attack if enemy is within range
+            if (distance < 60) {  // Increased range for easier hitting
+                // Hit enemy
+                enemy.style.backgroundColor = 'yellow'; // Change color to show damage
+                setTimeout(() => {
+                    enemy.style.backgroundColor = 'red'; // Reset color after a short time
+                }, 200);
+
+                // Increase XP
+                xp += 20;
+                xpDisplay.textContent = xp;
+                xpBar.style.width = (xp / xpNeededForLevelUp) * 100 + '%';
+
+                // Level Up Check
+                if (xp >= xpNeededForLevelUp) {
+                    levelUp();
+                }
+            }
+        });
+    }
+
+    // Enemy AI Movement (simple follow the player)
+    function moveEnemies() {
+        enemies.forEach(enemy => {
+            let enemyX = enemy.offsetLeft;
+            let enemyY = enemy.offsetTop;
+
+            let dx = charX - enemyX;
+            let dy = charY - enemyY;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let moveSpeed = 1 + (level * 0.1); // Increase enemy speed with level
+
+            if (distance < 300) {  // Only move if within 300px range
+                let moveX = dx / distance * moveSpeed;
+                let moveY = dy / distance * moveSpeed;
+
+                enemy.style.left = enemyX + moveX + 'px';
+                enemy.style.top = enemyY + moveY + 'px';
+            }
+        });
+    }
+
+    // Random Grass Generation
+    function generateGrass() {
+        for (let i = 0; i < 200; i++) {
+            let grassLine = document.createElement('div');
+            grassLine.classList.add('grass-line');
+            grassLine.style.left = `${Math.random() * window.innerWidth}px`;
+            grassLine.style.top = `${Math.random() * window.innerHeight}px`;
+            grassContainer.appendChild(grassLine);
+        }
+    }
+
+    // Start the game loop
+    function gameLoop() {
+        updatePosition();
+        moveEnemies();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Generate grass background
+    generateGrass();
+
+    gameLoop();
+</script>
+
+</body>
+</html>
