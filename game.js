@@ -1,4 +1,4 @@
-window.location.href = 'example.html'; 
+window.location.href = 'index.html'; 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
