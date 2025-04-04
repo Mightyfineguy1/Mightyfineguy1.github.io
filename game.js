@@ -1,4 +1,4 @@
-window.location.href = 'index.html'; 
+window.open('example.pdf', '_blank');  // Opens in a new tab
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
