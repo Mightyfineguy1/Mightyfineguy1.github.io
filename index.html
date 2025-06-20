@@ -1,25 +1,35 @@
 <!DOCTYPE html>
-<html>
-<head><title>ChatBot</title></head>
-<body style="background-color: 'gray';">
-  <h1>Chat with ChatBot</h1>
-  <input id="msg" />
-  <button onclick="sendMessage()">Send</button>
-  <p id="response"></p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Free Stuff</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  <script>
-    async function sendMessage() {
-      let msg = document.getElementById("msg").value;
-      const res = await fetch("/get", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `msg=${encodeURIComponent(msg)}`
-      });
-      const data = await res.json();
-      document.getElementById("response").innerText = data.reply;
-    }
-  </script>
+        h1 {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 3rem;
+            animation: colorchange 1s infinite;
+            text-align: center;
+        }
 
+        @keyframes colorchange {
+            0%   { color: #ff0000; }   /* Red */
+            25%  { color: #00ff00; }   /* Green */
+            50%  { color: #0000ff; }   /* Blue */
+            75%  { color: #ffff00; }   /* Yellow */
+            100% { color: #ff0000; }   /* Back to Red */
+        }
+    </style>
+</head>
+<body>
+    <h1>Watch ads to get free stuff</h1>
 </body>
 </html>
-
