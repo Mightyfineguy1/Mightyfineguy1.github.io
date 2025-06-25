@@ -37,7 +37,7 @@ iframe {
             id="youtubeAd"
             width="560" 
             height="315" 
-            src="https://www.youtube.com/embed/VGa1imApfdg?autoplay=1&mute=1" 
+            src="" 
             title="YouTube video player" 
             frameborder="0" 
             allow="autoplay; encrypted-media" 
@@ -53,10 +53,20 @@ iframe {
         const watchAdBtn = document.getElementById('watchAdBtn');
         const finishedBtn = document.getElementById('finishedBtn');
         const videoContainer = document.getElementById('videoContainer');
+        const youtubeAd = document.getElementById('youtubeAd');
 
         pointsDisplay.textContent = points;
 
+        // All 3 ad links
+        const adVideos = [
+            "https://www.youtube.com/embed/VGa1imApfdg?autoplay=1&mute=1",
+            "https://www.youtube.com/embed/13cKvoJPCns?autoplay=1&mute=1",
+            "https://www.youtube.com/embed/b0Ezn5pZE7o?autoplay=1&mute=1"
+        ];
+        let currentAdIndex = 0;
+
         watchAdBtn.addEventListener('click', () => {
+            youtubeAd.src = adVideos[currentAdIndex];
             videoContainer.style.display = 'block';
         });
 
@@ -64,8 +74,14 @@ iframe {
             points += 20;
             localStorage.setItem('points', points);
             pointsDisplay.textContent = points;
+
+            // Hide the video
             videoContainer.style.display = 'none';
+            youtubeAd.src = ""; // Reset the video
             alert('You earned 20 points!');
+
+            // Move to the next ad in the list
+            currentAdIndex = (currentAdIndex + 1) % adVideos.length;
         });
     </script>
 </body>
