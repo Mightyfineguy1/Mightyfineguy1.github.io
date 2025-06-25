@@ -1,35 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Free Stuff</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            background-color: #111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        h1 {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 3rem;
-            animation: colorchange 1s infinite;
-            text-align: center;
-        }
-
-        @keyframes colorchange {
-            0%   { color: #ff0000; }   /* Red */
-            25%  { color: #00ff00; }   /* Green */
-            50%  { color: #0000ff; }   /* Blue */
-            75%  { color: #ffff00; }   /* Yellow */
-            100% { color: #ff0000; }   /* Back to Red */
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>Watch ads to get free stuff</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 30px;
+}
+h1 {
+    font-size: 2rem;
+    animation: colorchange 1s infinite;
+}
+@keyframes colorchange {
+    0%   { color: #ff0000; }
+    25%  { color: #00ff00; }
+    50%  { color: #0000ff; }
+    75%  { color: #ffff00; }
+    100% { color: #ff0000; }
+}
+video {
+    max-width: 80%;
+    margin: 20px auto;
+}
+</style>
 </head>
 <body>
     <h1>Watch ads to get free stuff</h1>
+    <p>Points: <span id="points">0</span></p>
+    <button id="watchAdBtn">Watch Ad</button>
+    <div id="videoContainer" style="display:none;">
+        <video id="adVideo" controls>
+            <source src="your-ad-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script>
+        // Load saved points from localStorage
+        let points = parseInt(localStorage.getItem('points')) || 0;
+        const pointsDisplay = document.getElementById('points');
+        const watchAdBtn = document.getElementById('watchAdBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const adVideo = document.getElementById('adVideo');
+
+        pointsDisplay.textContent = points;
+
+        watchAdBtn.addEventListener('click', () => {
+            videoContainer.style.display = 'block';
+            adVideo.currentTime = 0;
+            adVideo.play();
+        });
+
+        adVideo.addEventListener('ended', () => {
+            points += 20;
+            localStorage.setItem('points', points);
+            pointsDisplay.textContent = points;
+            videoContainer.style.display = 'none';
+            alert('You earned 20 points!');
+        });
+    </script>
 </body>
 </html>
