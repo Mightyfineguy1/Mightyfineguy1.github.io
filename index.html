@@ -22,9 +22,9 @@ h1 {
     75%  { color: #ffff00; }
     100% { color: #ff0000; }
 }
-video {
-    max-width: 80%;
+iframe {
     margin: 20px auto;
+    display: block;
 }
 </style>
 </head>
@@ -33,29 +33,34 @@ video {
     <p>Points: <span id="points">0</span></p>
     <button id="watchAdBtn">Watch Ad</button>
     <div id="videoContainer" style="display:none;">
-        <video id="adVideo" controls>
-            <source src="your-ad-video.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <iframe 
+            id="youtubeAd"
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/VGa1imApfdg" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+        <br/>
+        <button id="finishedBtn">I finished watching</button>
     </div>
 
     <script>
-        // Load saved points from localStorage
         let points = parseInt(localStorage.getItem('points')) || 0;
         const pointsDisplay = document.getElementById('points');
         const watchAdBtn = document.getElementById('watchAdBtn');
+        const finishedBtn = document.getElementById('finishedBtn');
         const videoContainer = document.getElementById('videoContainer');
-        const adVideo = document.getElementById('adVideo');
 
         pointsDisplay.textContent = points;
 
         watchAdBtn.addEventListener('click', () => {
             videoContainer.style.display = 'block';
-            adVideo.currentTime = 0;
-            adVideo.play();
         });
 
-        adVideo.addEventListener('ended', () => {
+        finishedBtn.addEventListener('click', () => {
             points += 20;
             localStorage.setItem('points', points);
             pointsDisplay.textContent = points;
